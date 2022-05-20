@@ -32,11 +32,17 @@ export default {
   name: "Home",
   data() {
     return {
-      filterMenu: true,
+      filterMenu: false,
     };
   },
 
   components: {},
+  methods: {
+    newInvoice() {},
+    toggleFilterMenu() {
+      this.filterMenu = !this.filterMenu;
+    },
+  },
 };
 </script>
 
