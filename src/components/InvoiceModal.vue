@@ -1,6 +1,7 @@
 <template>
     <div @click="checkClick" ref="invoiceWrap" class="invoice-wrap flex flex-column">
         <form @submit.prevent="submitForm" class="invoice-content">
+        <Loading v-show="loading"/>
             <h1>New Invoice</h1>
 
             <!---- Bill From -->
@@ -107,11 +108,11 @@
             <!-- Save/Exit -->
             <div class="save flex">
                 <div class="left">
-                    <button @click="closeInvoice" class="red">Cancel</button>
+                    <button type="button" @click="closeInvoice" class="red">Cancel</button>
                 </div>
                 <div class="right flex">
-                    <button @click="saveDraft" class="dark-purple">Save Draft</button>
-                    <button @click="publishInvoice" class="purple">Create Invoice</button>
+                    <button type="submit" @click="saveDraft" class="dark-purple">Save Draft</button>
+                    <button type="submit" @click="publishInvoice" class="purple">Create Invoice</button>
                 </div>
             </div>
         </form>
@@ -120,6 +121,7 @@
 
 <script>
 import db from "../firebase/firebaseinit"
+import Loading from "../components/Loading.vue"
 import {
     mapMutations
 } from 'vuex';
@@ -159,6 +161,9 @@ export default {
             invoiceTotal: 0,
         };
     },
+    components: {
+        Loading,
+    },
 
     created() {
         this.invoiceDateUnix = Date.now();
@@ -166,7 +171,15 @@ export default {
 
     },
     methods: {
-        ...mapMutations(['TOGGLE_INVOICE']),
+        ...mapMutations(['TOGGLE_INVOICE','TOGGLE_MODAL']),
+
+        checkClick(e){
+
+            if (e.target === this.$refs.invoiceWrap){
+                this.TOGGLE_MODAL();
+            }
+        },
+
         closeInvoice() {
             this.TOGGLE_INVOICE();
         },
@@ -203,6 +216,7 @@ export default {
                 alert("Please ensure you filled out work items!");
                 return;
             }
+            this.loading=true;
 
             this.calInvoiceTotal();
 
@@ -233,6 +247,9 @@ export default {
                 invoicePaid: null,
 
             })
+            
+            this.loading=false;
+
             this.TOGGLE_INVOICE();
         },
         submitForm() {
